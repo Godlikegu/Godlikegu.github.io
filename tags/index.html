@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>标签 | Born for love</title>
+    <title>标签 | 小咕同学</title>
     <link rel="icon" type="image/jpeg" href="/pig.jpg">
     
 
@@ -64,7 +64,7 @@
                     
                     <img src="/medias/pig.jpg" class="logo-img" alt="LOGO">
                     
-                    <span class="logo-span">Born for love</span>
+                    <span class="logo-span">小咕同学</span>
                 </a>
             </div>
             
@@ -168,7 +168,7 @@
         
         <img src="/medias/pig.jpg" class="logo-img circle responsive-img">
         
-        <div class="logo-name">Born for love</div>
+        <div class="logo-name">小咕同学</div>
         <div class="logo-desc">
             
             自学博客
@@ -388,10 +388,43 @@
             </div>
             <div class="tag-chips">
                 
+                
+                <a href="/tags/%E6%8E%92%E5%BA%8F/" title="排序: 1">
+                    <span class="chip center-align waves-effect waves-light
+                             chip-default "
+                            data-tagname="排序" style="background-color: #F9EBEA;">排序
+                        <span class="tag-length">1</span>
+                    </span>
+                </a>
+                
             </div>
         </div>
     </div>
 </div>
+
+    
+    <link rel="stylesheet" type="text/css" href="/libs/jqcloud/jqcloud.css">
+<style type="text/css">
+    #tag-wordcloud {
+        width: 100%;
+        height: 300px;
+    }
+</style>
+
+<div class="container" data-aos="fade-up">
+    <div class="card">
+        <div id="tag-wordcloud" class="card-content"></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/libs/jqcloud/jqcloud-1.0.4.min.js"></script>
+<script type="text/javascript">
+    
+
+    $('#tag-wordcloud').jQCloud([{"text":"排序","weight":1,"link":"/tags/排序/"}], {
+        autoResize: true
+    });
+</script>
 
     
 
@@ -682,14 +715,6 @@ $(function () {
     
 
     <!-- 鼠标星星特效 -->
-     
-        <script type="text/javascript">
-            // 只在桌面版网页启用特效
-            var windowWidth = $(window).width();
-            if (windowWidth > 768) {
-                document.write('<script type="text/javascript" src="/libs/others/star.js"><\/script>');
-            }
-        </script>
     
 
      
