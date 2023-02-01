@@ -432,7 +432,7 @@ public static void insertionSort(int[] arr) &amp;#123;
 		arr<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> arr<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">^</span> arr<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>算法分析：<br>插入排序和打牌一样，手里的牌是有序的，抓到的牌放到合适的位置使之有序即可。<br>第一个if是保证代码的robustness,让代码更加健壮，这是一个很好的习惯。第一个for循环中i的位置是记录已经排序好的位置末尾的后一个待插入元素。i的初始值为1，因为第0个元素在最开始独立出现的时候就是排好序的（一共就一个元素，不需要排序了）。i不断增大的过程就是有序量增加的过程，标志着算法的进程加深。<br>第二个for循环中j的初始位置是i-1，也就是排好序的最后一个元素。在j–的过程中，相邻两个元素发生交换（通过swap函数实现数组元素的交换），直至arr[j]&lt;=arr[j+1]。<br><code>注意：这里的swap函数用了异或写法，目的是位运算加快速度并且节省temp的空间。平凡写法是创建一个temp变量作为中间人交换，a=a+b;b=a-b;a=a-b;也受到和异或一样的问题困扰。问题在于，如果某种排序算法中有a[i]和a[i]自己交换，则千万不可以用异或的方式，因为这会使得a[i]变成0,也就是说使用异或交换的时候，两个待交换的变量的内存不能是同一片地址。</code><br>*《算法导论》中对插入排序中第二个for循环实现略有不同，但本质一样，书中是用一个key变量保存了arr[i]，然后j=i-1;如果arr[j]&gt;key&amp;&amp;j&gt;=0,则arr[j+1]=arr[j];也就是不断地把数组元素往后移，直到arr[j]&lt;=key,最后把key放入arr[j+1],因为此时j+1的位置是“空的”（准确地说是和arr[j+2]相等，是无效信息)。本质无异。*<br><br></br><br>我还想说明一点，关于第一个for循环i的值的范围，有的地方是取头不取尾，有的地方取尾不取头，这个其实是根据循环不变量确定的。插入排序的循环不变量就是0到i-1都保持有序，并不是0到i-1都是其最终位置。所以i从1开始，并且要取到最末尾。而像选择排序则不同，选择排序选出最大或最小值之后那个值就是确定的，以最小值为例，i应该从0开始，循环条件为i&lt;arr.length-1,去掉末尾，因为前面都取到对应位置，最后一个元素自然也就在它自己的位置上。<br><br></br><br><br></br><br><br></br></p>
+<p>算法分析：<br>插入排序和打牌一样，手里的牌是有序的，抓到的牌放到合适的位置使之有序即可。<br>第一个if是保证代码的robustness,让代码更加健壮，这是一个很好的习惯。第一个for循环中i的位置是记录已经排序好的位置末尾的后一个待插入元素。i的初始值为1，因为第0个元素在最开始独立出现的时候就是排好序的（一共就一个元素，不需要排序了）。i不断增大的过程就是有序量增加的过程，标志着算法的进程加深。<br>第二个for循环中j的初始位置是i-1，也就是排好序的最后一个元素。在j–的过程中，相邻两个元素发生交换（通过swap函数实现数组元素的交换），直至arr[j]&lt;=arr[j+1]。<br><code>注意：这里的swap函数用了异或写法，目的是位运算加快速度并且节省temp的空间。平凡写法是创建一个temp变量作为中间人交换，a=a+b;b=a-b;a=a-b;也受到和异或一样的问题困扰。问题在于，如果某种排序算法中有a[i]和a[i]自己交换，则千万不可以用异或的方式，因为这会使得a[i]变成0,也就是说使用异或交换的时候，两个待交换的变量的内存不能是同一片地址。</code><br>*《算法导论》中对插入排序中第二个for循环实现略有不同，但本质一样，书中是用一个key变量保存了arr[i]，然后j=i-1;如果arr[j]&gt;key&amp;&amp;j&gt;=0,则arr[j+1]=arr[j];也就是不断地把数组元素往后移，直到arr[j]&lt;=key,最后把key放入arr[j+1],因为此时j+1的位置是“空的”（准确地说是和arr[j+2]相等，是无效信息)。本质无异。*<br><br></br><br>我还想说明一点，关于第一个for循环i的值的范围，有的地方是取头不取尾，有的地方取尾不取头，这个其实是根据循环不变量确定的。插入排序的循环不变量就是0到i-1都保持有序，并不是0到i-1都是其最终位置。所以i从1开始，并且要取到最末尾。而像选择排序则不同，选择排序选出最大或最小值之后那个值就是确定的，以最小值为例，i应该从0开始，循环条件为i &lt; arr.length-1,去掉末尾，因为前面都取到对应位置，最后一个元素自然也就在它自己的位置上。<br><br></br><br><br></br><br><br></br></p>
 <h2 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h2><p><strong>先上代码</strong></p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">selectionSort</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> arr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 		<span class="token keyword">if</span> <span class="token punctuation">(</span>arr <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> arr<span class="token punctuation">.</span>length <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -927,18 +927,17 @@ public static void insertionSort(int[] arr) &amp;#123;
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2022/12/30/Sorting/">
+                <a href="/2023/01/31/fall-detection/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="排序算法">
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="fall_detection">
                         
-                        <span class="card-title">排序算法</span>
+                        <span class="card-title">fall_detection</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -948,27 +947,26 @@ public static void insertionSort(int[] arr) &amp;#123;
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-30
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-01-31
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Algorithm/" class="post-category">
-                                    Algorithm
+                            <a href="/categories/Machine-learning/" class="post-category">
+                                    Machine learning
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E6%8E%92%E5%BA%8F/">
-                        <span class="chip bg-color">排序</span>
+                    <a href="/tags/svm-data-disposal/">
+                        <span class="chip bg-color">svm , data disposal</span>
                     </a>
                     
                 </div>
