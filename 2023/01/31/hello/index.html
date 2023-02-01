@@ -415,7 +415,7 @@
             <div id="articleContent">
                 <h1 id="基于python的跌倒识别的svm机器学习-model1（最初级版本）"><a href="#基于python的跌倒识别的svm机器学习-model1（最初级版本）" class="headerlink" title="基于python的跌倒识别的svm机器学习 model1（最初级版本）"></a>基于python的跌倒识别的svm机器学习 model1（最初级版本）</h1><p>代码包含五个py文件：data_disposal,get_feature,feature_extract,train,model_open</p>
 <h2 id="数据处理与清洗部分"><a href="#数据处理与清洗部分" class="headerlink" title="数据处理与清洗部分"></a>数据处理与清洗部分</h2><h3 id="数据介绍"><a href="#数据介绍" class="headerlink" title="数据介绍"></a>数据介绍</h3><p>注明：本人使用的数据是.csv文件<br>客观数据包含：被测试人的身高，体重，年龄，性别<br>主要数据采集可从两方面进行入手，一方面是<strong>传感器的种类</strong>(Accelerometer,Gyroscope,Magnetometer)，另一方面是传感器<strong>佩戴的位置</strong>(RightPocket,Waist,Wrist,Ankle,Chest)<br>具体信息如图</p>
-<p><img src="./hello/pic1.png" alt="pic1"></p>
+<p><img src="./fall-detection/pic1.png" alt="pic1"></p>
 <p><br></br></p>
 <h3 id="数据处理方法"><a href="#数据处理方法" class="headerlink" title="数据处理方法:"></a>数据处理方法:</h3><p>将训练集二八划分，八成为训练集，两成为验证集</p>
 <p>1.首先是<strong>data_disposal</strong>部分，将.csv文件里面的无关数据行剔除，只保留了图片中最下方以’;’隔开的数据，代码如下</p>
@@ -586,8 +586,8 @@ hit_rate <span class="token operator">=</span> hit<span class="token operator">/
 
 <span class="token keyword">print</span><span class="token punctuation">(</span>hit_rate<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><br></br><br><strong>最后结果如下图</strong></p>
-<p><img src="./hello/pic2.png" alt="pic2"><br><br></br><br><br></br><br><strong>正确率如下图</strong></p>
-<p><img src="./hello/pic3.png" alt="pic3"></p>
+<p><img src="./fall-detection/pic2.png" alt="pic2"><br><br></br><br><br></br><br><strong>正确率如下图</strong></p>
+<p><img src="./fall-detection/pic3.png" alt="pic3"></p>
 <p>约为<strong>84.2%</strong>,为本人目前在不同参数中获得的最优值<br><br></br></p>
 <p>未成功识别judge set中数据如下，可能后续需要hard code<br>UMAFall_Subject_18_ADL_LyingDown_OnABed 2个</p>
 <p>UMAFall_Subject_18_ADL_Hopping 7个</p>
@@ -637,7 +637,7 @@ hit_rate <span class="token operator">=</span> hit<span class="token operator">/
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://godlikegu.github.io/2023/01/31/fall-detection/">https://godlikegu.github.io/2023/01/31/fall-detection/</a>
+                    <a href="https://godlikegu.github.io/2023/01/31/hello/">https://godlikegu.github.io/2023/01/31/hello/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -755,10 +755,9 @@ hit_rate <span class="token operator">=</span> hit<span class="token operator">/
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
                 <a href="/2023/01/31/fall-detection/">
                     <div class="card-image">
@@ -776,9 +775,9 @@ hit_rate <span class="token operator">=</span> hit<span class="token operator">/
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-01-31
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-01-31
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -791,7 +790,6 @@ hit_rate <span class="token operator">=</span> hit<span class="token operator">/
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -810,13 +808,13 @@ hit_rate <span class="token operator">=</span> hit<span class="token operator">/
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/01/31/hello/">
+                <a href="/2022/12/30/Sorting/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="fall_detection">
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="排序算法">
                         
-                        <span class="card-title">fall_detection</span>
+                        <span class="card-title">排序算法</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -827,14 +825,14 @@ hit_rate <span class="token operator">=</span> hit<span class="token operator">/
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-01-31
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-30
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Machine-learning/" class="post-category">
-                                    Machine learning
+                            <a href="/categories/Algorithm/" class="post-category">
+                                    Algorithm
                                 </a>
                             
                             
@@ -844,8 +842,8 @@ hit_rate <span class="token operator">=</span> hit<span class="token operator">/
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/svm-data-disposal/">
-                        <span class="chip bg-color">svm , data disposal</span>
+                    <a href="/tags/%E6%8E%92%E5%BA%8F/">
+                        <span class="chip bg-color">排序</span>
                     </a>
                     
                 </div>
