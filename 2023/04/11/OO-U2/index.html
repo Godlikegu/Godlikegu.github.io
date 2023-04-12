@@ -1,0 +1,1334 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Godlikegu">
+    <meta name="description" content="Hw5架构与代码分析题面模拟多电梯实时系统，楼层从1至11楼，设计需要根据乘客在不同时间点的请求输入满足上下行，开关门，以及模拟乘客的进出的需求。初始默认有6部电梯且均在1楼。
+设计分析输入线程在不同的时间节点导入请求，电梯线程负责满足（消">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>小咕同学</title>
+    <link rel="icon" type="image/jpeg" href="/pig.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/css/reward.css">
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/pig.jpg" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">小咕同学</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/pig.jpg" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">小咕同学</div>
+        <div class="logo-desc">
+            
+            自学博客
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title"></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                          <div class="article-tag">
+                            <span class="chip bg-color">无标签</span>
+                          </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2023-04-11
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+        <!-- 是否加载使用自带的 prismjs. -->
+        <link rel="stylesheet" href="/libs/prism/prism.min.css">
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Hw5架构与代码分析"><a href="#Hw5架构与代码分析" class="headerlink" title="Hw5架构与代码分析"></a>Hw5架构与代码分析</h1><h2 id="题面"><a href="#题面" class="headerlink" title="题面"></a>题面</h2><p>模拟多电梯实时系统，楼层从1至11楼，设计需要根据乘客在不同时间点的请求输入满足上下行，开关门，以及模拟乘客的进出的需求。初始默认有6部电梯且均在1楼。</p>
+<h2 id="设计分析"><a href="#设计分析" class="headerlink" title="设计分析"></a>设计分析</h2><p>输入线程在不同的时间节点导入请求，电梯线程负责满足（消耗）这些请求。这是一个典型的<strong>生产者-消费者</strong>模型。其中输入线程是生产者线程，电梯是消费者线程，中间有一个”托盘”用于存放乘客的请求，不妨称之为<strong>请求队列(requestList)<strong>，表示处于该队列中的请求</strong>已经发出但尚未被分配</strong>到具体的电梯上。相应地，每个电梯名下都有一个<strong>只属于该电梯的请求表</strong>(用HashMap&lt;Integer, Arraylist&lt; PersonRequest &gt;&gt;表示，其中Integer表示楼层数， Arraylist&lt; PersonRequest &gt;用于储存该楼层对应的请求集合)。</p>
+<p>至此，一个大体的框架已经出现了：输入线程(Input类)，电梯线程(Elevator类), 调度器线程(Distributor类，决定把请求分配给哪一个电梯)。此外，为了迭代的灵活性和更好地满足<strong>开闭原则</strong>，课程组建议我们写一个Schedule类，并给每一个电梯分配一个Schedule类作为其属性，用来控制电梯的上下与开关门。这样一来，如果后续有不同种类的电梯（如横向电梯），我们可以通过继承或重写Schedule类来减少代码的修改量。</p>
+<p>值得注意的是，<strong>对于消费的过程，其实当乘客从请求队列里被取出并分配到某个具体的电梯里就已经结束了</strong>，因为此时已经将请求队列对应的容器进行了remove操作，消费过程结束。<code>注意：这里在取出的时候需要先判断请求队列是否为空</code>（来自OS的好习惯try(LIST_EMPTY())）。<strong>如果请求队列为空且输出线程已经结束，直接将电梯停运(END)，结束对应的电梯线程；如果此时请求队列为空但是输出线程尚未结束，则将电梯处于等候(WAIT)状态，并用wait将该电梯线程挂起，减少CPU的忙等。</strong> 相应地，当有请求从存入的时候在最后必须notifyAll()，让可能处于wait状态的电梯进入工作。</p>
+<h2 id="多线程安全分析与多线程语法设计细节"><a href="#多线程安全分析与多线程语法设计细节" class="headerlink" title="多线程安全分析与多线程语法设计细节"></a>多线程安全分析与多线程语法设计细节</h2><h3 id="线程交互可能性分析"><a href="#线程交互可能性分析" class="headerlink" title="线程交互可能性分析"></a>线程交互可能性分析</h3><p>这里存在交互的线程主要是<strong>输入线程和调度器线程</strong>，以及<strong>调度器线程和电梯线程</strong>。<br>理由如下：<br>1.调度器线程是否能结束取决于输入线程是否结束以及请求队列是否为空。<br>2.调度器需要监控电梯的实时状态决定将请求队列中的请求分配给哪一部电梯。如电梯现在在几楼，电梯的运行方向如何，电梯是否满员等。<br>3.电梯线程是否能结束要根据电梯属性中的请求表(上文介绍的哈希表)及电梯内部人员集合是否为空，还有输入线程是否结束两方面来判断。即使电梯已经完成了目前的任务，请求表为空且电梯内的乘客均已送至目的楼层，仍然需要判断调度器线程是否结束。</p>
+<h3 id="线程安全具体解决方案"><a href="#线程安全具体解决方案" class="headerlink" title="线程安全具体解决方案"></a>线程安全具体解决方案</h3><p>由于这样的交互存在，相应地也存在<strong>两对设计线程安全的共享访问对象</strong>。</p>
+<ol>
+<li><p>调度器和输入线程之间共享了请求队列。因此对于请求队列的add方法和getAndRemove方法需要进行synchronized上锁。由于队列没有长度限制，add方法不需要额外判断进行wait操作。但是getAndRemove中设计remove操作，而队列的下限显然是空队列，因此对于getAndRemove方法，需要提前判空。如果while(请求队列为空）则wait()是不对的。因为最后请求队列必为空，此时单纯靠判空进行wait()的话无法结束调度器线程。因此我们还需要知道Input线程是否已经结束，从供求关系来看，当Input线程结束且请求队列为空，则请求队列将一直为空，调度器可以停止工作。因此getAndRemove方法中包含wait()的while()条件应该是<strong>请求队列为空且Input线程结束</strong>。</p>
+<p> 那么问题来了，如何表示Input线程已经结束呢。笔者本想用java提供的多线程语法来表示，但是觉得有些不便，因此选择对一个布尔变量InputEnd进行置位。问题又来了，这个变量应该作为谁的属性呢？Input，Distributor还是RequestList呢？由于wait所在同步块和判断的循环都在RequestList的getAndRemove方法中，且RequestList是Input线程和Distributor线程都具有的private属性(其实这里可以采用单例模式开发RequestList，使得代码鲁棒性增强)，<strong>故应该把InputEnd作为RequestList的属性</strong>。并且对此属性进行读写上锁，对应isInputEnd和setInputEnd方法。综上所述，while里的条件改写为IsEmpty &amp;&amp; ! IsInputEnd。相应地，在setInputEnd方法的结尾也应该有NotifyAll()方法，这样才能在最后唤醒Distributor线程，执行最后一次while判断并退出。<strong>此外，最后一次由于getAndRemove方法退出的时候是IsEmpty且IsInputEnd的，故无法get到实际内容，我们可以返回null或者返回一个非法id的请求，当Distributor调用getAndRemove得到这个异常值的时候，标志着Distributor结束，同时也解决了Distributor的结束标志问题</strong>相应地，Distributor结束了，电梯仍然可能处于WAIT状态，那么如何结束电梯线程呢？这一点其实和Distributor线程的结束异曲同工，在第二点中介绍。</p>
+</li>
+<li><p>调度器和电梯之间共享了属于某个电梯的<strong>请求表类</strong>（主体为HashMap），但是HashMap不是线程安全的，我们需要对其put,get和remove操作进行加锁。由于这里是哈希表，当电梯到达某一层的时候如果本层请求为空，电梯不会开门（后续LOOK算法中实现），因此在这里进行getAndRemove操作时<strong>不需要提前判断是否为空</strong>。但是在remove之后，如果本层为空，则将该层的键值对整体从HashMap中移走。这样做的目的是判断有无需要在floor层上电梯的乘客时可以直接用ContainsKey(floor)进行判断。相应地，在put的时候就需要额外进行判断，当containsKey为false的时候，说明这个请求是本楼层的第一个请求，需要new一个arraylist放入此请求并连同楼层数一起put进哈希表；当containsKey为true的时候，直接get到arraylist并对arryalist进行add即可。这里在电梯线程未结束且电梯处于WAI状态的时候会调用<strong>请求表类</strong>中的Requestwait()函数（只是将wait包含在synchronized块中），等待put操作的notifyALL。</p>
+<p> 此外，对于上一点中提出的elevator的线程结束问题，我们也采用一个标志位isDistributorEnd放在<strong>请求表类</strong>中。具体操作与第一点相同，写明一个isEnd函数和一个置位函数作为读写函数（需要synchronized保护）。当Distributor退出线程的时候调用置位函数，当电梯完成所有任务且IsEnd被置位的时候，退出电梯线程。</p>
+</li>
+</ol>
+<p><code>总结：这里使用了两组生产者-消费者模型，其中Distributor调度器类既是消费者（将请求从请求队列中取出），又是生产者(将请求放入电梯的请求表类中)。并用两个布尔变量和对应的加锁方法判断线程是否结束。wait和notifyALL的时机也非常重要，绝对不能少，也不要滥用。</code></p>
+<h3 id="电梯运行算法——LOOK"><a href="#电梯运行算法——LOOK" class="headerlink" title="电梯运行算法——LOOK"></a>电梯运行算法——LOOK</h3><p>这里直接采用了第七次的架构，直接忽略maintian和access即可。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">State</span> <span class="token function">nextState</span><span class="token punctuation">(</span><span class="token keyword">int</span> floorNow<span class="token punctuation">,</span> <span class="token keyword">boolean</span> direction<span class="token punctuation">,</span>
+                           <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">MyPersonRequest</span><span class="token punctuation">></span></span> destRequestList
+            <span class="token punctuation">,</span> <span class="token keyword">int</span> numOfPassenger<span class="token punctuation">,</span> <span class="token keyword">boolean</span> isMaintain<span class="token punctuation">,</span> <span class="token class-name">State</span> state<span class="token punctuation">,</span> <span class="token keyword">int</span> capacity<span class="token punctuation">,</span> <span class="token keyword">int</span> access<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>isMaintain<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">MAINTAIN</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>state <span class="token operator">==</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">MAINTAIN</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">OVER</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token function">existOut</span><span class="token punctuation">(</span>floorNow<span class="token punctuation">,</span> destRequestList<span class="token punctuation">)</span> <span class="token operator">||</span>
+                <span class="token function">existIn</span><span class="token punctuation">(</span>direction<span class="token punctuation">,</span> numOfPassenger<span class="token punctuation">,</span> floorNow<span class="token punctuation">,</span> capacity<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>access <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">OPEN</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>numOfPassenger <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">MOVE</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>requestList<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>requestList<span class="token punctuation">.</span><span class="token function">getisOver</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">return</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">OVER</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">return</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">WAIT</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>requestList<span class="token punctuation">.</span><span class="token function">hasAheadRequest</span><span class="token punctuation">(</span>floorNow<span class="token punctuation">,</span> direction<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">return</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">MOVE</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">return</span> <span class="token class-name">State</span><span class="token punctuation">.</span><span class="token constant">REV</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>课上PPT有一句发人深省的话“面向对象就是面向生活”，虽然不知道这句话的作者生活面向得如何（但愿TA被温柔以待），但是LOOK架构确实很符合日常生活的电梯行为。大概思想是：只接同方向的乘客，保证电梯里的乘客都是向一个方向运行的。因此只要电梯里有人，电梯就会一往无前。当电梯里没有人的时候，需要分支判断：<br>1.如果电梯的<strong>请求表类</strong>为空，任意一层都没有即将上电梯的乘客。如果此时getisOver(对应调度器线程结束时对请求表类的置位)已经被置位，那么电梯线程结束。如果此时没有被置为，电梯线程设为WAIT状态(调用Requestwait()函数，避免CPU忙等）。<br>2.如果电梯的<strong>请求表类</strong>不为空：如果电梯前方有请求的话（前方指的是方向，如果电梯向上前方就是楼上，反之则反之）继续MOVE，反之则电梯后方有请求，将状态设置为REV调头，改变电梯运行的方向。</p>
+<p><br><br><br>注：此处参考了<code>https://hyggge.github.io/2022/04/29/oo/oo-di-er-dan-yuan-zong-jie/</code>的博客, 学长（也可能是学姐）使用的枚举类表示电梯的状态非常简洁，可读性极强，让人爱不释手，十分值得学习。</p>
+<h2 id="调度器算法"><a href="#调度器算法" class="headerlink" title="调度器算法"></a>调度器算法</h2><p>笔者一开始采用的是%6+1,保证每部电梯被均匀地调度。然而贪心不足蛇吞象，笔者加入了性能怪的大军中，迷失了初心。本意是当有乘客顺路可以接到的话就一起接上，但是忽略了电梯是否满载的问题，以及产生优先级函数的参数调整不合理。最后导致强测只有一部电梯一直处于运行而TLE，十分可惜。</p>
+<p>这里就建议采用%6+1。其他模拟方法超出了笔者的能力范围，也不是多线程架构的初衷，本文不予以过多介绍。</p>
+<h2 id="出现过的BUG和测试建议"><a href="#出现过的BUG和测试建议" class="headerlink" title="出现过的BUG和测试建议"></a>出现过的BUG和测试建议</h2><p>1.前方<strong>有没有请求</strong>和<strong>请求方向是否一致</strong>是两码事，小心混淆；<br>此外，aheadDirection里面判断的是getFromFloor &gt; 或 &lt; floorNow,<strong>不要带等号</strong>，否则当电梯接一个从3到2楼的乘客的时候，刚到三楼的时候，本来应该进入reverse(转向)状态，但是由于等号成立，会导致继续move到4楼，然后在reverse，甚至发生从1楼到100楼的现象。由于request不会有1楼一下，11楼以上的情况，所以我们不用特判到达1或11楼与否，在刚到达1或11楼电梯只可能有如下几种状态：reverse(move之前),over,wait,open。<br> <img src="https://img-blog.csdnimg.cn/38a6d774fa1d43a4a9cb52ea1684cbcf.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/f9542dba510c42348a66a31547840c0c.png" alt="在这里插入图片描述"></p>
+<p><br><br><br>2.<br>我一开始把size &lt; 6写成了&lt;=6，导致可以进去七个人，正常人一般不会犯下这样的错误<br><img src="https://img-blog.csdnimg.cn/f953a2ec49f041828b01e55f00942a7e.png" alt="在这里插入图片描述"></p>
+<p><br><br><br>3.<br>先让人出来，再让人进去，保证可进入人数最大化。出入最好分开。意思是一arrive就开门，一开门就出去，然后等0.4s，给乘客赶到电梯的时间（等待Input线程可能可稍带的读入。（这个也不算BUG了，只是建议）<br><img src="https://img-blog.csdnimg.cn/2f9b0ee6032746feb1bd596cb5c0b034.png" alt="在这里插入图片描述"></p>
+<p><br><br></p>
+<p>测试建议：<br>1.高频反向接人(测试strategy)<br>2.大客流量综合投入(测试电梯容纳上限)<br>3.大客流量分批投入(测试tle与否)<br>4.压线大客流量投入(时间卡在50s)</p>
+<p>至此，Hw5的架构基本完成。</p>
+<h1 id="Hw6架构与代码分析"><a href="#Hw6架构与代码分析" class="headerlink" title="Hw6架构与代码分析"></a>Hw6架构与代码分析</h1><h2 id="增加需求"><a href="#增加需求" class="headerlink" title="增加需求"></a>增加需求</h2><p>新增maintain已经存在的电梯和add新电梯的情况。当电梯maintain的时候，就近停下，要求maintain之后arrive的次数&lt;=2。新电梯的容量，速度等参数都可以在一定范围内自定义。</p>
+<h2 id="新的问题与解决"><a href="#新的问题与解决" class="headerlink" title="新的问题与解决"></a>新的问题与解决</h2><h3 id="add新电梯的设计"><a href="#add新电梯的设计" class="headerlink" title="add新电梯的设计"></a>add新电梯的设计</h3><p>之前的6部基础电梯的基本参数都是固定的，我们在Hw5的架构中对于Elevator的构造函数可能会传入Magic Number，这样从可读性来说不是很好，也不便于后续的迭代和扩展。因此，在Hw5中我们使用的构造函数应该包含默认参数传递，如果我们没有传入新的参数，则有一个default值，这样便可以支持自定义参数电梯。电梯的其余行为可以不变。</p>
+<p><code>心得与反思：倘若之前直接传入了Magic Number如6,200等参数，则在add自定义电梯的时候，需要把所有的判断条件都进行修改。如判断电梯是否满乘的时候要改成if (numOfPassengers == capacity)，open和close的时间也要改成time*1000。这样的工作应该在首次架构中做好</code></p>
+<h3 id="调度器结束判断条件的修改"><a href="#调度器结束判断条件的修改" class="headerlink" title="调度器结束判断条件的修改"></a>调度器结束判断条件的修改</h3><p>之前调度器的结束条件是<strong>请求队列为空</strong>且<strong>Input线程结束</strong>。由于maintain的存在，导致即使之前介绍的两个条件已经满足，也可能存在新的maintain，导致有乘客被迫下电梯而没有到达目的地。这样的情况下，我们需要重新把乘客放入请求队列中重新调度，因此结束的条件变得更为复杂。仔细思考后，我们发现Input结束后不会再出现新的maintain，当相应电梯执行完maintain指令之后就能保证不会再有任何请求进到请求队列中等候调度。此时如果请求队列为空，则可以判定调度器线程结束。因此我们很容易可以想到用一种类似于信号量机制的整数变量<br>来记录已经发出却尚未得到电梯响应的maintain命令数量。<strong>初始的时候numOfMaintain置为0，当Input线程输入一个maintain指令的时候，这个变量++。当电梯响应maintian，把所有乘客赶下电梯放入请求队列并从存放电梯的数组elevators中移除被maintain的电梯之后，这个变量–。当这个变量为0且Input线程已经结束的时候，便不会再出现新的maintain。</strong> 值得注意的是，这个numOfmaintain在自增的时候是由Input线程控制的，而自减的时候是由elevator线程控制的，因此是共享变量，存在线程安全问题，对于其自增add方法和自减sub方法都需要进行上锁。对该变量的读get方法也需要上锁。这个变量由于决定了Distributor的结束与否，因此也应该和之前的分析一样，放在请求队列RequestList中，并将RequestList的getAndRemove方法中wait的条件改**requests.isEmpty() &amp;&amp; (!(isOver（表示Input线程是否结束，前面有介绍） == true &amp;&amp; getNumOfMaintain == 0))**。相应地，在numOfMaintain的sub方法的末尾应该加上NotifyAll()；因为有可能是最后一次sub方法唤醒Distributor线程，重新判断getNumOfMaintian的值是否被减为0。</p>
+<h3 id="电梯被maintain的处理"><a href="#电梯被maintain的处理" class="headerlink" title="电梯被maintain的处理"></a>电梯被maintain的处理</h3><p>在Elevator类中添加isMaintain的布尔类型属性，并配置线程安全的读get和写set方法。当Input线程有maintain请求的时候，调用对应id电梯的set方法，将isMaintain置为true。相应地，在电梯的状态枚举类中添加MAINTAIN。此外，在电梯的schedule运行策略中需要在一开始就判断是否isMaintain为true。如果为true，则执行相应代码，把未到达目的地的乘客重新new一个新的请求，目的是改变乘客的出发楼层。<strong>不要忘了把该电梯名下的请求表中的乘客原样返回到请求队列中</strong>，并把电梯从elevators中移除 。如果电梯的状态为MAINTIAN，下一次直接OVER即可，结束电梯线程。</p>
+<h2 id="调度策略"><a href="#调度策略" class="headerlink" title="调度策略"></a>调度策略</h2><p>之前采用的是mod6+1的策略。如果直接迁移的话，本次应该采用mod numOfElevators + 1的方式。但这样可能并不能达到我们的目的，原因是当有电梯被maintain或add的时候，电梯数目会随时发生改变，可能不能达到均匀分配的效果。因此我采用了LRU算法，每个电梯加一个timeOfNotUsed属性，记录电梯多久没被使用。每一轮都加1，如果电梯被使用则清零。每次调度时，遍历电梯数组，选出timeOfNotUsed最大的电梯进行请求分配即可。</p>
+<p>至此，Hw6也可以顺利完成（<code>注：本次开发采用了效率更高的读写锁</code>）</p>
+<h1 id="Hw7架构与代码分析"><a href="#Hw7架构与代码分析" class="headerlink" title="Hw7架构与代码分析"></a>Hw7架构与代码分析</h1><h2 id="增加需求-1"><a href="#增加需求-1" class="headerlink" title="增加需求"></a>增加需求</h2><p>本次作业增加的需求主要体现在电梯的可达性，新add的电梯里会有残疾电梯只能在某几层开门停留。存在电梯的换乘问题。此外，还要求同一层最多有4个正处于开门状态的电梯，最多有2个电梯只接人（开门前乘客集合是开门后乘客集合的子集）。</p>
+<h2 id="新的问题与解决-1"><a href="#新的问题与解决-1" class="headerlink" title="新的问题与解决"></a>新的问题与解决</h2><h3 id="满足同一层开门和只接人电梯数目要求"><a href="#满足同一层开门和只接人电梯数目要求" class="headerlink" title="满足同一层开门和只接人电梯数目要求"></a>满足同一层开门和只接人电梯数目要求</h3><p>同一层开门和接人数目的限制其实是一种有限个数的共享资源，很容易想到采用信号量机制的方式对其进行限制。<br>这里我采用了自己手写的信号量机制，原理都一样。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">FloorState</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">int</span> inserviceMax <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">int</span> receiveOnlyMax <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> inserviceArray<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> receiveOnlyArray<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">FloorState</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>inserviceArray <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token number">15</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>receiveOnlyArray <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token number">15</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">subInService</span><span class="token punctuation">(</span><span class="token keyword">int</span> curFloor<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">=</span> inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token function">notifyAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">subReceiveOnly</span><span class="token punctuation">(</span><span class="token keyword">int</span> curFloor<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        receiveOnlyArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">=</span> receiveOnlyArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">=</span> inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token function">notifyAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">checkInserviceFullAndAdd</span><span class="token punctuation">(</span><span class="token keyword">int</span> curFloor<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">==</span> inserviceMax<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">=</span> inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">checkReceiveOnlyFullAndAdd</span><span class="token punctuation">(</span><span class="token keyword">int</span> curFloor<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>receiveOnlyArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">==</span> receiveOnlyMax<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        receiveOnlyArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">=</span> receiveOnlyArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">=</span> inserviceArray<span class="token punctuation">[</span>curFloor<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>注意：receiveOnly（只接人）是inservice（开门）其中的一种情况即可，前者改变，后者也要跟着变。此外，在add的时候检查人数是否已满应该是一个一气呵成的过程，倘如单独拿出一个块用于检查，再拿出一个块用于add，很有可能产生线程不安全。例如现在inservice为3，来了两个电梯，检查都可以进入，然后都进行add操作，inservice则会变成5，这显然不对。相应地在sub这二者的情况下，需要notifyAll()唤醒目前想要开门但被最大服务数目限制的电梯线程。</code></p>
+<h3 id="可达性分析与换乘策略"><a href="#可达性分析与换乘策略" class="headerlink" title="可达性分析与换乘策略"></a>可达性分析与换乘策略</h3><p>代码如下</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">Elevator</span> <span class="token function">getTheBestElevator</span><span class="token punctuation">(</span><span class="token class-name">MyPersonRequest</span> req<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>   <span class="token comment">//// 传入新的personrequest</span>
+        rlock<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            minTimes <span class="token operator">=</span> <span class="token number">1000</span><span class="token punctuation">;</span>
+            sitAdvices <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            backAdvices <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span> start <span class="token operator">=</span> req<span class="token punctuation">.</span><span class="token function">getFromFloor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span> dest <span class="token operator">=</span> req<span class="token punctuation">.</span><span class="token function">getToFloor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> vis <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token number">15</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Integer</span><span class="token punctuation">></span></span> useableIndexs <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> elevators<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token class-name">Elevator</span> e <span class="token operator">=</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getOpenFloorCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span>start<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> e<span class="token punctuation">.</span><span class="token function">getOpenFloorCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span>dest<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> 
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+                        useableIndexs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                    <span class="token class-name">SitAdvice</span> sitAdvice <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SitAdvice</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> dest<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    backAdvices<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>sitAdvice<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>useableIndexs<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">int</span> max <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+                <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+                <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">Integer</span> i <span class="token operator">:</span> useableIndexs<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">></span> max<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        max <span class="token operator">=</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        index <span class="token operator">=</span> i<span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+                req<span class="token punctuation">.</span><span class="token function">setNextFloor</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">getToFloor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> elevators<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token class-name">Elevator</span> e <span class="token operator">=</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getOpenFloorCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span>start<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    vis<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+                    getOffFloor <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+                    <span class="token function">dfs</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> start<span class="token punctuation">,</span> dest<span class="token punctuation">,</span> vis<span class="token punctuation">,</span> e<span class="token punctuation">.</span><span class="token function">getOpenFloorCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    vis<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">int</span> maxTime <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span> resNextFloor <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>sitAdvices<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+                <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">SitAdvice</span> advice <span class="token operator">:</span> sitAdvices<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>advice<span class="token punctuation">.</span><span class="token function">getElevatorIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">></span> maxTime<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        maxTime <span class="token operator">=</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>advice<span class="token punctuation">.</span><span class="token function">getElevatorIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        index <span class="token operator">=</span> advice<span class="token punctuation">.</span><span class="token function">getElevatorIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        resNextFloor <span class="token operator">=</span> advice<span class="token punctuation">.</span><span class="token function">getGetOffFloor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
+                <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">SitAdvice</span> advice <span class="token operator">:</span> backAdvices<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>advice<span class="token punctuation">.</span><span class="token function">getElevatorIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">></span> maxTime<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        maxTime <span class="token operator">=</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>advice<span class="token punctuation">.</span><span class="token function">getElevatorIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        index <span class="token operator">=</span> advice<span class="token punctuation">.</span><span class="token function">getElevatorIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        resNextFloor <span class="token operator">=</span> advice<span class="token punctuation">.</span><span class="token function">getGetOffFloor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+            req<span class="token punctuation">.</span><span class="token function">setNextFloor</span><span class="token punctuation">(</span>resNextFloor<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">getPersonId</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span><span class="token string">" : next floor"</span><span class="token operator">+</span>resNextFloor<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">///////////////////////////</span>
+            <span class="token keyword">return</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">finally</span> <span class="token punctuation">&#123;</span>
+            rlock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">dfs</span><span class="token punctuation">(</span><span class="token keyword">int</span> firstIndex<span class="token punctuation">,</span> <span class="token keyword">int</span> times<span class="token punctuation">,</span> <span class="token keyword">int</span> start<span class="token punctuation">,</span> <span class="token keyword">int</span> destination<span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> vis<span class="token punctuation">,</span>
+                    <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> access<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        rlock<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>times <span class="token operator">></span> minTimes<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">return</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> elevators<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>vis<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">continue</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                <span class="token class-name">Elevator</span> e <span class="token operator">=</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">isUsable</span><span class="token punctuation">(</span>access<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>times <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        <span class="token class-name">Elevator</span> first <span class="token operator">=</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>firstIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token keyword">int</span> minGap <span class="token operator">=</span> <span class="token number">15</span><span class="token punctuation">;</span>
+                        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> j <span class="token operator">&lt;=</span> <span class="token number">11</span><span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getOpenFloorCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> first<span class="token punctuation">.</span><span class="token function">getOpenFloorCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name">Math</span><span class="token punctuation">.</span><span class="token function">abs</span><span class="token punctuation">(</span>j <span class="token operator">-</span> start<span class="token punctuation">)</span> <span class="token operator">&lt;</span> minGap<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                                    minGap <span class="token operator">=</span> <span class="token class-name">Math</span><span class="token punctuation">.</span><span class="token function">abs</span><span class="token punctuation">(</span>j <span class="token operator">-</span> start<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                                    getOffFloor <span class="token operator">=</span> j<span class="token punctuation">;</span>
+                                <span class="token punctuation">&#125;</span>
+                            <span class="token punctuation">&#125;</span>
+                        <span class="token punctuation">&#125;</span>
+                    <span class="token punctuation">&#125;</span>
+                    vis<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getOpenFloorCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span>destination<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        <span class="token class-name">Elevator</span> first <span class="token operator">=</span> elevators<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>firstIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token keyword">if</span> <span class="token punctuation">(</span>times <span class="token operator">==</span> minTimes <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                            <span class="token class-name">SitAdvice</span> sitAdvice <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SitAdvice</span><span class="token punctuation">(</span>firstIndex<span class="token punctuation">,</span> getOffFloor<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            backAdvices<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>sitAdvice<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span>first<span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+                                sitAdvices<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>sitAdvice<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            <span class="token punctuation">&#125;</span>
+                        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>times <span class="token operator">&lt;</span> minTimes<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                            <span class="token class-name">SitAdvice</span> sitAdvice <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SitAdvice</span><span class="token punctuation">(</span>firstIndex<span class="token punctuation">,</span> getOffFloor<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span>first<span class="token punctuation">.</span><span class="token function">getUnusedTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+                                sitAdvices <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                                sitAdvices<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>sitAdvice<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            <span class="token punctuation">&#125;</span>
+                            backAdvices <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            backAdvices<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>sitAdvice<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            minTimes <span class="token operator">=</span> times<span class="token punctuation">;</span>
+                        <span class="token punctuation">&#125;</span>
+                        vis<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+                        <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nextAccess <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token number">15</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+                        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> j <span class="token operator">&lt;=</span> <span class="token number">11</span><span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span>access<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span> <span class="token operator">||</span> e<span class="token punctuation">.</span><span class="token function">getOpenFloorCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                                nextAccess<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+                            <span class="token punctuation">&#125;</span>
+                        <span class="token punctuation">&#125;</span>
+                        <span class="token function">dfs</span><span class="token punctuation">(</span>firstIndex<span class="token punctuation">,</span> times <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> start<span class="token punctuation">,</span> destination<span class="token punctuation">,</span> vis<span class="token punctuation">,</span> nextAccess<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        vis<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">finally</span> <span class="token punctuation">&#123;</span>
+            rlock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>为了实现换乘，笔者自行实现了一个PersonRequest，只是为了加一个nextFloor属性来标志乘客在这部电梯里面应该到哪一个楼层。</p>
+<p>顾名思义getBestElevator返回的是最适合某个请求的电梯。并且在这个方法里面会对请求进行修改，修改的正是请求的nextFloor。getBestElevator的代码含义是：先选取可以直达的电梯（不一定是所有楼层均可达的电梯，只要不用换乘就行）如果有直达的电梯，选择其中unUsedTime最长的电梯作为我们的目标。如果没有可以直达的电梯，则进dfs函数进行路径的寻找。此时我们需要记录的信息是dfs搜索的层数（和换乘的次数有关，记为times），如果是可达路径，那么下电梯的层数nextFloor应该是多少。因此笔者选择在getBestElevator遍历每一部可能可以上的电梯，从它开始进行dfs。在实现dfs的过程中，从dfs的前几行就可以看出，笔者不断地在维护可以换乘的最少次数，当超过这个次数却还没有找到最终路径的话，直接舍弃即可，这样就可以完成剪枝，避免每条路都走到底。最后再从那些最短的路径中选出unUsedTime最长的电梯作为我们的目标。这样的“贪心”模式，不仅可以减少搜索算法的开销，还可以可以保证我们离终点是越来越“近”的，这里近字打了引号是因为近不是指楼层间的距离，而是指换乘次数，因为假设现在要从3楼到2楼，可能唯一的方法是先去11楼换乘另一个能到2楼的电梯。</p>
+<h3 id="结束条件"><a href="#结束条件" class="headerlink" title="结束条件"></a>结束条件</h3><p>由于即使乘客可能无法一次性到达，故本次作业除了maintain可能导致RequestList里面有原有的请求重新加入，还有可能换乘也要重新加入。因此仿造之前的numOfMaintain的信号量机制，这次采用numOfChange表示乘客的数量。其对应的方法除了名称不同之外基本与numOfMaintain对应的方法相同。值得注意的是：对于numOfChange来说，在Input线程接收到一个PersonRequest的时候调用add方法，当乘客到达最终目的地时调用sub方法。并将RequestList的getAndRemove方法中wait的条件改为**requests.isEmpty() &amp;&amp; (!(isOver（表示Input线程是否结束，前面有介绍） == true &amp;&amp; getNumOfChange == 0))**即可，由于这样的情况包括了maintain的情况，故可以不再需要isMaintain。这样就可以使得Distributor线程顺利结束。</p>
+<h2 id="调度策略-1"><a href="#调度策略-1" class="headerlink" title="调度策略"></a>调度策略</h2><p>和Hw6中的LRU算法一致。</p>
+<h1 id="代码优缺点分析与感想"><a href="#代码优缺点分析与感想" class="headerlink" title="代码优缺点分析与感想"></a>代码优缺点分析与感想</h1><h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>1.不够灵活，乘客分配到某个电梯的名下就必须只能乘坐这个电梯了，没有周转的余地，除非maintain。<br>2.调度算法不是很好，加入碰到只剩一部完全电梯的情况，其他电梯可能就没有机会被使用了，或者使用的机会很少，仅在那些电梯可以直达的情况才会被使用。<br>3.没有利用java的semaphore信号量机制，选择自己手写，重复造轮子。<br>4.类太多太繁琐，有些代码的功能和名称不完全一样，不完全符合高内聚，低耦合的要求。</p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>稳健能保证通过且性能不俗，只要不乱优化就不会出任何问题，不容易被特殊数据针对，不会对不同数据表现出极大的性能波动，稳如泰山。</p>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>优化应该尽力而为，但是可能自己以为的优化并不是贪心优化，并不是每个情况都能做到最好。比如第一次为了把所有的乘客都安排得尽可能“顺路”，导致参数过度优化和过拟合，强测中产生了对某部电梯的过度依赖导致TLE，还不如%6+1，老实本分。Hw7差点没有经得住优化的诱惑，还好OS给足了压力占用了我的时间，使我保留了最初的调度算法，最后得分也让我满意。<br><br><br><br><br><br><br><br><br></p>
+<p>最终UML协作图如下（可能和文字叙述不完全一致，这里的OriginalReqeust指的就是<strong>请求队列</strong>RequestList）<br><img src="/2023/04/11/OO-U2/hw7.png" alt="在这里插入图片描述"></p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Godlikegu</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://godlikegu.github.io/2023/04/11/OO-U2/">https://godlikegu.github.io/2023/04/11/OO-U2/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Godlikegu</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            <span class="chip bg-color">无标签</span>
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2023/04/11/OO-U2/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
+                        
+                        <span class="card-title"></span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-04-11
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Godlikegu
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2023/03/23/OO-U2-hw1/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="OO-U2-hw1">
+                        
+                        <span class="card-title">OO-U2-hw1</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-03-23
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/OO/" class="post-category">
+                                    OO
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+                        <span class="chip bg-color">多线程</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/libs/prism/prism.min.js"></script>
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/libs/aplayer/APlayer.min.js"></script>
+<script src="/libs/aplayer/Meting.min.js"></script>
+
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2023</span>
+            
+            <a href="/about" target="_blank">Godlikegu</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/Godlikegu" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:411316103@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=411316103" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 411316103" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
